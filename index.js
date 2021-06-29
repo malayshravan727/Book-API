@@ -20,7 +20,7 @@ mongoose
     useFindAndModify: false,
     useCreateIndex: true
   })
-).then(() => console.log("connection established!!!"));
+  .then(() => console.log("connection established!!!"));
 
 /*
 Route           /
