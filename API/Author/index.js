@@ -14,6 +14,23 @@ Router.get("/", async (req, res) => {
   return res.json({ authors: getAllAuthors });
 });
 
+/* 
+     Route         /specific
+     Description   to get specific author 
+     Access        PUBLIC
+     Parameters    id
+     Method        GET
+*/   
+Router.get("/specific/:id",async(req,res)=>
+{
+  const getAuthorById = await AuthorModel.find({id:parseInt(req.params.id)})
+  if(!getAuthorById)
+  {
+      return res.json({error:`No such author with id : ${req.params.id} was found `});
+  }
+  return res.json({authors_by_id : getAuthorById });
+});
+
 /*
   Route           /author
   Description     get a list of authors based on a book's ISBN
@@ -54,8 +71,55 @@ Router.post("/new", (req, res) => {
   return res.json({ message: "author was added!" });
 });
 
-module.exports = Router;
+/* 
+     Route         /author/name/update    
+     Description   to update Author name using id     
+     Access        PUBLIC
+     Parameters    id
+     Method        PUT
+*/ 
+Router.put("/name/update/:id",async(req,res)=>
+{
+    try{
+    const updatedAuthorName = await AuthorModel.findOneAndUpdate(
+        {
+          id:req.params.id,
+        },
+        {
+            name:req.body.newNameOfAuthor,
+        },
+        {
+            new:true,
+            runValidators:true,
+        },
+    );
+     return res.json({author:updatedAuthorName,message:"Name of the author was successfully updated"});
+    }
+    
+     catch (error)
+     {
+         return res.json({error:error.message});
+     }
+});
 
-// syntax was correct
-// logica error -> we were not handling errors -> crashed
-// try catch
+/* 
+     Route         /author/delete
+     Description   to delete an author 
+     Access        PUBLIC
+     Parameters    id
+     Method        DELETE
+*/     
+Router.delete("/delete/:id",async(req,res)=>
+{ 
+     
+    const updatedAuthorDatabase= await AuthorModel.findOneAndDelete(
+        {
+          id:req.params.id,    
+        },
+        
+    );
+     return res.json({authors:updatedAuthorDatabase});
+    
+});
+
+module.exports = Router;
